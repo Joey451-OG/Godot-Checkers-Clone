@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://b0rbcnru2dksb"]
+
+[ext_resource type="TileSet" uid="uid://cdqhnpcfv0dn4" path="res://assets/textures/base.tres" id="1_j5px3"]
+[ext_resource type="Script" uid="uid://bwmtbw8k5y1uo" path="res://GDScript/main.gd" id="1_twpsu"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_sj43t"]
+
+[node name="root" type="Node2D" unique_id=1204750993 node_paths=PackedStringArray("tile_map")]
+material = SubResource("CanvasItemMaterial_sj43t")
+script = ExtResource("1_twpsu")
+tile_map = [NodePath("TileMapLayers/Background"), NodePath("TileMapLayers/GameBoard"), NodePath("TileMapLayers/Players")]
+
+[node name="TileMapLayers" type="Node2D" parent="." unique_id=1687046794]
+
+[node name="Background" type="TileMapLayer" parent="TileMapLayers" unique_id=1044427569]
+texture_filter = 1
+tile_set = ExtResource("1_j5px3")
+
+[node name="GameBoard" type="TileMapLayer" parent="TileMapLayers" unique_id=1530068043]
+texture_filter = 1
+tile_set = ExtResource("1_j5px3")
+
+[node name="Players" type="TileMapLayer" parent="TileMapLayers" unique_id=1534709710]
+texture_filter = 1
+tile_set = ExtResource("1_j5px3")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1165093824]
+anchor_mode = 0
+zoom = Vector2(4, 4)
