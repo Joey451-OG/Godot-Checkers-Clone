@@ -8,7 +8,7 @@
 [node name="root" type="Node2D" unique_id=1204750993 node_paths=PackedStringArray("tile_map")]
 material = SubResource("CanvasItemMaterial_sj43t")
 script = ExtResource("1_twpsu")
-tile_map = [NodePath("TileMapLayers/Background"), NodePath("TileMapLayers/GameBoard"), NodePath("TileMapLayers/Players")]
+tile_map = [NodePath("TileMapLayers/Background"), NodePath("TileMapLayers/GameBoard"), NodePath("TileMapLayers/Players"), NodePath("TileMapLayers/Effects")]
 
 [node name="TileMapLayers" type="Node2D" parent="." unique_id=1687046794]
 
@@ -21,6 +21,10 @@ texture_filter = 1
 tile_set = ExtResource("1_j5px3")
 
 [node name="Players" type="TileMapLayer" parent="TileMapLayers" unique_id=1534709710]
+texture_filter = 1
+tile_set = ExtResource("1_j5px3")
+
+[node name="Effects" type="TileMapLayer" parent="TileMapLayers" unique_id=1014545193]
 texture_filter = 1
 tile_set = ExtResource("1_j5px3")
 
