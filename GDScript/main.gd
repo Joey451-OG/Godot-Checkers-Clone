@@ -59,10 +59,15 @@ func _process(delta: float) -> void:
 			_render_moves(moves)
 		
 		# step 4
-		# for now, every move is avalible
-		if piece_index == null: # hack for now until step 3 is done
-			_move_piece(tile_clicked)
-		
+		if piece_index == null:
+			if tile_clicked in moves:
+				_move_piece(tile_clicked)
+			else:
+				# clear the current selection
+				player_pieces[current_piece_index].isSelected = false
+				_render_moves(moves, true)
+				moves.clear()
+				
 		# step 6 is completed at the beginning of _calculate_valid_moves()
 
 
