@@ -5,7 +5,7 @@ extends Node2D
 @export var isDebugOn: bool = false
 
 # shared
-var isPlayerRed : bool = true
+var isPlayerRed : bool = false
 var black_pieces : Array[Piece]
 var red_pieces : Array[Piece]
 var isPlayerTurn : bool
@@ -111,14 +111,25 @@ func _calculate_valid_moves(piece_index: int) -> Array[Vector2i]:
 			
 			# TODO: Impliment capturing checks
 			# It might be more effient to hand off to a seperate function here
+			
+		
 	else:
 		# King logic
 		# basically the same except a bit more complicated
-		
+	
 		# TODO: Impliment king logic here
 		pass
 	
 	return valid_moves
+
+func _valid_king_moves(piece_index : int):
+	var current := player_pieces[piece_index]
+	var left := Vector2i(current.cord.x - 1, current.cord.y - 1)
+	var right := Vector2i(current.cord.x + 1, current.cord.y - 1)
+	var left_king := Vector2i(current.cord.x - 1, current.cord.y + 1)
+	var right_king := Vector2i(current.cord.x + 1, current.cord.y + 1)
+	
+	
 
 func _move_piece(location: Vector2i) -> void:
 	'''
