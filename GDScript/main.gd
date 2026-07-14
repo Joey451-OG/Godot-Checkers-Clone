@@ -5,7 +5,7 @@ extends Node2D
 @export var isDebugOn: bool = false
 
 # shared
-var isPlayerRed : bool = false
+var isPlayerRed : bool = true
 var black_pieces : Array[Piece]
 var red_pieces : Array[Piece]
 var isPlayerTurn : bool
@@ -111,7 +111,15 @@ func _calculate_valid_moves(piece_index: int) -> Array[Vector2i]:
 			
 			# TODO: Impliment capturing checks
 			# It might be more effient to hand off to a seperate function here
-			
+			if opponent_obsticals[i] != null:
+				if i == 0 and _validate_potential_move(left):
+					# left
+					valid_moves.append(_calculate_capture_moves(left, Vector2i(-1, -1)))
+				elif i == 1 and _validate_potential_move(right):
+					# right
+					valid_moves.append(_calculate_capture_moves(right, Vector2i(1, -1)))
+			continue
+
 		
 	else:
 		# King logic
@@ -122,12 +130,29 @@ func _calculate_valid_moves(piece_index: int) -> Array[Vector2i]:
 	
 	return valid_moves
 
+func _calculate_capture_moves(cord: Vector2i, direction_vector: Vector2i) -> Array[Vector2i]:
+	var check_cord := Vector2i(cord.x + direction_vector.x, cord.y + direction_vector.y)
+	var opponent_obstical_index = _search_opponent_pieces(check_cord)
+	var valid_moves : Array[Vector2i]
+	
+	if opponent_obstical_index == null:
+		opponent_obstical_index = _search_opponent_pieces(Vector2i(check_cord + direction_vector))
+		
+		if opponent_obstical_index != null:
+			valid_moves.append(_calculate_capture_moves(
+				opponent_pieces[opponent_obstical_index].cord,
+				direction_vector
+			))
+	return valid_moves
+	
+
 func _valid_king_moves(piece_index : int):
 	var current := player_pieces[piece_index]
 	var left := Vector2i(current.cord.x - 1, current.cord.y - 1)
 	var right := Vector2i(current.cord.x + 1, current.cord.y - 1)
 	var left_king := Vector2i(current.cord.x - 1, current.cord.y + 1)
 	var right_king := Vector2i(current.cord.x + 1, current.cord.y + 1)
+	
 	
 	
 
@@ -273,6 +298,13 @@ func _renderer(isPlayerRed: bool):
 					))
 					
 					tile_map[2].set_cell(current_cord, 0, red_player)
+				
+	black_pieces.append(Piece.new(
+		false,
+		Vector2i(3 + board_origin.x, 4 + board_origin.y),
+		tile_map
+	))
+	tile_map[2].set_cell(Vector2i(3 + board_origin.x, 4 + board_origin.y), 0, black_player)
 					
 	# player (always starts at the bottom on the board [highest y cord])
 	for x in range(board_origin.x, board_origin.x + BOARD_SIZE):
