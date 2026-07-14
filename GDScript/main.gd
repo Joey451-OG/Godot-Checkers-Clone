@@ -132,17 +132,27 @@ func _calculate_valid_moves(piece_index: int) -> Array[Vector2i]:
 
 func _calculate_capture_moves(cord: Vector2i, direction_vector: Vector2i) -> Array[Vector2i]:
 	var check_cord := Vector2i(cord.x + direction_vector.x, cord.y + direction_vector.y)
-	var opponent_obstical_index = _search_opponent_pieces(check_cord)
+	var blank_index = _search_opponent_pieces(check_cord)
 	var valid_moves : Array[Vector2i]
+	var opponent_obsticals : Array[Vector2i]
 	
-	if opponent_obstical_index == null:
-		opponent_obstical_index = _search_opponent_pieces(Vector2i(check_cord + direction_vector))
+	if blank_index == null:
+		# Found a blank behind the cord
+		valid_moves.append(check_cord)
 		
-		if opponent_obstical_index != null:
-			valid_moves.append(_calculate_capture_moves(
-				opponent_pieces[opponent_obstical_index].cord,
-				direction_vector
-			))
+		# repeat from _caclulate_valid_moves()
+		var left := Vector2i(check_cord.x - 1, check_cord.y - 1)
+		var right := Vector2i(check_cord.x + 1, check_cord.y - 1)
+		
+		opponent_obsticals.append(_search_opponent_pieces(left))
+		opponent_obsticals.append(_search_opponent_pieces(right))
+		
+		for i in range(len(opponent_obsticals)):
+			if opponent_obsticals[i] != null:
+				if i == 0 and _validate_potential_move(left):
+					valid_moves.append(_calculate_capture_moves(left, Vector2i(-1, -1)))
+				if i == 1 and _validate_potential_move(right):
+					valid_moves.append(_calculate_capture_moves(right, Vector2i(1, -1)))
 	return valid_moves
 	
 
