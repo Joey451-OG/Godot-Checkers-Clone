@@ -7,8 +7,8 @@ var captured_piece : Vector2i
 
 @warning_ignore("shadowed_variable")
 func _init(
-	from_cord: Vector2i, 
-	to_cord: Vector2i, 
+	from_cord: Vector2i,
+	to_cord: Vector2i,
 	isCapture: bool
 ) -> void:
 	self.from_cord = from_cord

@@ -58,33 +58,40 @@ func _process(delta: float) -> void:
 		# step 3
 		if piece_index != null:
 			moves = _calculate_valid_moves(piece_index)
-			_render_moves(moves.map(MOVE_get_to_cord))
+			_render_moves(MOVE_get_to_cord(moves))
 		
 		# step 4
 		if piece_index == null:
-			var tmp_to_cord := moves.map(MOVE_get_to_cord)
-			var tmp_isCapture := moves.map(MOVE_get_isCapture)
+			var tmp_to_cord := MOVE_get_to_cord(moves)
+			var tmp_isCapture := MOVE_get_isCapture(moves)
 			
 			for i in range(len(tmp_to_cord)): 
 				if tile_clicked == tmp_to_cord[i] and not tmp_isCapture[i]:
 					_move_piece(tile_clicked)
-				elif tile_clicked == tmp_to_cord[i] and tmp_isCapture[i]:
+				if tile_clicked == tmp_to_cord[i] and tmp_isCapture[i]:
 					_move_piece(tile_clicked)
-					_capture_piece(moves[i].captured_piece)
-				else:
-					# clear the current selection
-					player_pieces[current_piece_index].isSelected = false
-					_render_moves(to_moves, true)
-					moves.clear()
-					to_moves.clear()
-					
+					_capture_piece(moves[i])
+			
+			# clear the current selection
+			player_pieces[current_piece_index].isSelected = false
+			_render_moves(MOVE_get_to_cord(moves), true)
+			moves.clear()
+			
 		# step 6 is completed at the beginning of _calculate_valid_moves()
 
-func MOVE_get_to_cord(m: Move) -> Vector2i:
-	return m.to_cord
+func MOVE_get_to_cord(moves: Array[Move]) -> Array[Vector2i]:
+	var ret : Array[Vector2i] 
+	for m in moves:
+		ret.append(m.to_cord)
+	
+	return ret
 
-func MOVE_get_isCapture(m: Move) -> bool:
-	return m.isCapture
+func MOVE_get_isCapture(moves: Array[Move]) -> Array[bool]:
+	var ret : Array[bool]
+	for m in moves:
+		ret.append(m.isCapture)
+	
+	return ret
 
 func _calculate_valid_moves(piece_index: int) -> Array[Move]:
 	var current := player_pieces[piece_index]
@@ -95,7 +102,7 @@ func _calculate_valid_moves(piece_index: int) -> Array[Move]:
 	var valid_moves : Array[Move]
 	
 	# Derender previous moves and clear
-	_render_moves(moves.map(MOVE_get_to_cord), true)
+	_render_moves(MOVE_get_to_cord(moves), true)
 	moves.clear()
 	
 	if not current.get_isKing():
@@ -157,14 +164,12 @@ func _calculate_valid_moves(piece_index: int) -> Array[Move]:
 	return valid_moves
 
 func _calculate_capture_moves(cord: Vector2i, direction_vector: Vector2i) -> Array[Move]:
-	var check_cord := Vector2i(cord.x + direction_vector.x, cord.y + direction_vector.y)
+	var check_cord := Vector2i(cord + direction_vector)
 	var op_blank_index = _search_opponent_pieces(check_cord)
 	var pl_blank_index = _search_player_pieces(check_cord)
 	var valid_moves : Array[Move]
-	var opponent_obsticals : Array[Vector2i]
-	var player_obsticals : Array[Vector2i]
 	
-	if pl_blank_index == null and op_blank_index == null:
+	if pl_blank_index == null and op_blank_index == null and _validate_potential_move(check_cord):
 		# Found a blank behind the cord
 		var current_move = Move.new(
 			cord - direction_vector,
@@ -173,22 +178,17 @@ func _calculate_capture_moves(cord: Vector2i, direction_vector: Vector2i) -> Arr
 		)
 		current_move.set_captured_piece(cord)
 		valid_moves.append(current_move)
-		
-		
-		# repeat from _caclulate_valid_moves()
-		var left := Vector2i(check_cord.x - 1, check_cord.y - 1)
-		var right := Vector2i(check_cord.x + 1, check_cord.y - 1)
-		
-		opponent_obsticals.append(_search_opponent_pieces(left))
-		opponent_obsticals.append(_search_opponent_pieces(right))
-		player_obsticals.append(_search_player_pieces(left))
-		player_obsticals.append(_search_player_pieces(right))
 
 	return valid_moves
 	
-func _capture_piece(tile: Vector2i):
-	opponent_pieces.pop_at(_search_opponent_pieces(tile))
-	tile_map[2].erase_cell(tile)
+func _capture_piece(move: Move):
+	# clear the move hints
+	_render_moves(MOVE_get_to_cord(moves), true)
+	
+	opponent_pieces.pop_at(_search_opponent_pieces(move.captured_piece))
+	tile_map[2].erase_cell(move.captured_piece)
+	
+	moves.clear()
 
 func _valid_king_moves(piece_index : int):
 	var current := player_pieces[piece_index]
