@@ -23,7 +23,7 @@ func _ready() -> void:
 	# is the player red?
 	isPlayerTurn = not isPlayerRed
 	
-	_renderer(isPlayerRed)
+	_renderer()
 	
 	if isPlayerRed:
 		player_pieces = red_pieces
@@ -37,7 +37,7 @@ func _ready() -> void:
 		player_pieces[-1]._isKing = true
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	# moving the pieces
 	'''
 	Stratigy:
@@ -48,8 +48,6 @@ func _process(delta: float) -> void:
 		5. Else deselect and unhightlight piece
 		6. De-render moves 
 	'''
-	var to_moves : Array[Vector2i]
-
 	
 	if Input.is_action_pressed("Select"):
 		# step 1
@@ -370,14 +368,11 @@ func _search_opponent_pieces(tile: Vector2i) -> Variant:
 	
 	return null
 
-func _renderer(isPlayerRed: bool):
+func _renderer():
 	# draw background
 	var bgk_tile: Vector2i = Vector2i(0, 1)
 	var square_red := Vector2i(0, 0)
 	var square_white := Vector2i(1, 0)
-	var red_player := Vector2i(2, 0)
-	var black_player := Vector2i(3, 0)
-	var board_border := Vector2i(4, 0)
 	var board_origin := Vector2i(4, 2)
 	
 	for x in range(18):
@@ -450,10 +445,10 @@ func _renderer(isPlayerRed: bool):
 						tile_map
 					))
 	
-func _render_moves(moves: Array[Vector2i], erase: bool = false):
+func _render_moves(shadows: Array[Vector2i], erase: bool = false):
 	var move_hint = Vector2i(1, 1)
-	for m in moves:
+	for s in shadows:
 		if not erase:
-			tile_map[3].set_cell(m, 0, move_hint)
+			tile_map[3].set_cell(s, 0, move_hint)
 		else:
-			tile_map[3].erase_cell(m)
+			tile_map[3].erase_cell(s)
