@@ -2,7 +2,7 @@ extends Node2D
 
 # renderer var	
 @export var tile_map: Array[TileMapLayer]
-@export var isDebugOn: bool = false
+@export var isDebugOn: bool = true
 
 # shared
 var isPlayerRed : bool = true
@@ -31,6 +31,10 @@ func _ready() -> void:
 	else:
 		player_pieces = black_pieces
 		opponent_pieces = red_pieces
+	
+	if isDebugOn:
+		print_debug("Making last player piece a King")
+		player_pieces[-1]._isKing = true
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -73,22 +77,23 @@ func _process(delta: float) -> void:
 					_capture_piece(moves[i])
 			
 			# clear the current selection
-			player_pieces[current_piece_index].isSelected = false
-			_render_moves(MOVE_get_to_cord(moves), true)
-			moves.clear()
+			if current_piece_index != null:
+				player_pieces[current_piece_index].isSelected = false
+				_render_moves(MOVE_get_to_cord(moves), true)
+				moves.clear()
 			
 		# step 6 is completed at the beginning of _calculate_valid_moves()
 
-func MOVE_get_to_cord(moves: Array[Move]) -> Array[Vector2i]:
+func MOVE_get_to_cord(given_moves: Array[Move]) -> Array[Vector2i]:
 	var ret : Array[Vector2i] 
-	for m in moves:
+	for m in given_moves:
 		ret.append(m.to_cord)
 	
 	return ret
 
-func MOVE_get_isCapture(moves: Array[Move]) -> Array[bool]:
+func MOVE_get_isCapture(given_moves: Array[Move]) -> Array[bool]:
 	var ret : Array[bool]
-	for m in moves:
+	for m in given_moves:
 		ret.append(m.isCapture)
 	
 	return ret
@@ -141,25 +146,26 @@ func _calculate_valid_moves(piece_index: int) -> Array[Move]:
 			
 			# NOTE: capturing checks
 			if opponent_obsticals[i] != null:
-				if i == 0 and _validate_potential_move(left):
+				if i == 0:
 					# left
 					var capture_moves := _calculate_capture_moves(left, Vector2i(-1, -1))
 					for move in capture_moves:
 						valid_moves.append(move)
-				elif i == 1 and _validate_potential_move(right):
+				elif i == 1:
 					# right
 					var capture_moves := _calculate_capture_moves(right, Vector2i(1, -1))
 					for move in capture_moves:
 						valid_moves.append(move)
 				continue
-
-		
+	
 	else:
 		# King logic
 		# basically the same except a bit more complicated
 	
 		# TODO: Impliment king logic here
-		pass
+		var king_moves = _valid_king_moves(piece_index)
+		for kmove in king_moves:
+			valid_moves.append(kmove)
 	
 	return valid_moves
 
@@ -194,36 +200,113 @@ func _valid_king_moves(piece_index : int):
 	var current := player_pieces[piece_index]
 	var left := Vector2i(current.cord.x - 1, current.cord.y - 1)
 	var right := Vector2i(current.cord.x + 1, current.cord.y - 1)
-	var left_king := Vector2i(current.cord.x - 1, current.cord.y + 1)
-	var right_king := Vector2i(current.cord.x + 1, current.cord.y + 1)
+	var left_back := Vector2i(current.cord.x - 1, current.cord.y + 1)
+	var right_back := Vector2i(current.cord.x + 1, current.cord.y + 1)
+	var player_obsticals : Array
+	var opponent_obsticals : Array
+	var valid_moves : Array[Move]
 	
+	player_obsticals.append(_search_player_pieces(left))
+	player_obsticals.append(_search_player_pieces(left_back))
+	player_obsticals.append(_search_player_pieces(right))
+	player_obsticals.append(_search_player_pieces(right_back))
 	
+	opponent_obsticals.append(_search_opponent_pieces(left))
+	opponent_obsticals.append(_search_opponent_pieces(left_back))
+	opponent_obsticals.append(_search_opponent_pieces(right))
+	opponent_obsticals.append(_search_opponent_pieces(right_back))
 	
+	for i in range(len(player_obsticals)):
+		'''
+		Notes on order:
+			*_obsticals = [left, left_back, right, right_back]
+		'''
+		if player_obsticals[i] == null and opponent_obsticals[i] == null:
+			# uncomment and modify as needed for limited "Flying Kings"
+			#var vector_moves = _check_king_direction_vector(left, Vector2i(-1, -1))
+			if i == 0 and _validate_potential_move(left):
+				valid_moves.append(Move.new(
+					current.cord,
+					left,
+					false
+				))
+				
+			if i == 1 and _validate_potential_move(left_back):
+				valid_moves.append(Move.new(
+					current.cord,
+					left_back,
+					false
+				))
+				
+			if i == 2 and _validate_potential_move(right):
+				valid_moves.append(Move.new(
+					current.cord,
+					right,
+					false
+				))
+				
+			if i == 3 and _validate_potential_move(right_back):
+				valid_moves.append(Move.new(
+					current.cord,
+					right_back,
+					false
+				))
+			
+			continue
+		
+		if opponent_obsticals[i] != null: # if this index is not null, then player_obsticals' index must be null
+			if i == 0:
+				var capture_moves := _calculate_capture_moves(left, Vector2i(-1, -1))
+				for move in capture_moves:
+					valid_moves.append(move)
+			if i == 1:
+				var capture_moves := _calculate_capture_moves(left_back, Vector2i(-1, 1))
+				for move in capture_moves:
+					valid_moves.append(move)
+			if i == 2:
+				var capture_moves := _calculate_capture_moves(right, Vector2i(1, -1))
+				for move in capture_moves:
+					valid_moves.append(move)
+			if i == 3:
+				var capture_moves := _calculate_capture_moves(right_back, Vector2i(1, 1))
+				for move in capture_moves:
+					valid_moves.append(move)
+		
+	return valid_moves
+
+func _check_king_direction_vector(start_tile: Vector2i, vector: Vector2i) -> Array[Move]:
+	var check_tile := start_tile + vector
+	var player_obstical = _search_player_pieces(check_tile)
+	var opponent_obstical = _search_opponent_pieces(check_tile)
+	var valid_moves : Array[Move]
+	
+	if player_obstical == null and opponent_obstical == null and _validate_potential_move(check_tile):
+		valid_moves.append(Move.new(
+			start_tile,
+			check_tile,
+			false # this bool means that pure "Flying Kings" isn't possible
+		))
+		
+		var recursive_moves = _check_king_direction_vector(check_tile, vector)
+		for move in recursive_moves:
+			valid_moves.append(move)
+	
+	return valid_moves
 
 func _move_piece(location: Vector2i) -> void:
 	'''
+	NOTE: Steps 2 - 3 are now handled by the Piece class
+	keeping the function so I don't have to do any refactoring
+	
 	3 steps for moving a piece:
 		1. De-highlight the current position
 		2. Erase piece
-		3. Draw new piece to the board
+		3. Draw new piece to the board 
 		4. Update piece location
 	'''
 	
 	# step 1
 	player_pieces[current_piece_index].isSelected = false
-	
-	# step 2
-	tile_map[2].erase_cell(player_pieces[current_piece_index].cord)
-	
-	# step 3
-	var player_icon : Vector2i
-	
-	if isPlayerRed:
-		player_icon = Vector2i(2, 0)
-	else:
-		player_icon = Vector2i(3, 0)
-	
-	tile_map[2].set_cell(location, 0, player_icon)
 	
 	# step 4
 	player_pieces[current_piece_index].cord = location
@@ -310,7 +393,7 @@ func _renderer(isPlayerRed: bool):
 	for x in range(board_origin.x, board_origin.x + BOARD_SIZE):
 		for y in range(board_origin.y, board_origin.y + BOARD_SIZE):
 			if isDebugOn: 
-				print_debug("(%d, %d)" % [x, y])
+				print_debug("Generating board cell (%d, %d)" % [x, y])
 			
 			if (x + y) % 2 == 0:
 				tile_map[1].set_cell(Vector2i(x, y), 0, square_white)
@@ -333,7 +416,6 @@ func _renderer(isPlayerRed: bool):
 						tile_map
 					))
 					
-					tile_map[2].set_cell(current_cord, 0, black_player)
 				else:
 					red_pieces.append(Piece.new(
 						true, 
@@ -341,15 +423,15 @@ func _renderer(isPlayerRed: bool):
 						tile_map
 					))
 					
-					tile_map[2].set_cell(current_cord, 0, red_player)
-				
-	black_pieces.append(Piece.new(
-		false,
-		Vector2i(3 + board_origin.x, 4 + board_origin.y),
-		tile_map
-	))
-	tile_map[2].set_cell(Vector2i(3 + board_origin.x, 4 + board_origin.y), 0, black_player)
-					
+	
+	if isDebugOn:
+		print_debug("Placing debug op. piece")
+		black_pieces.append(Piece.new(
+			false,
+			Vector2i(3 + board_origin.x, 4 + board_origin.y),
+			tile_map
+		))
+	
 	# player (always starts at the bottom on the board [highest y cord])
 	for x in range(board_origin.x, board_origin.x + BOARD_SIZE):
 		for y in range(board_origin.y + 5, board_origin.y + BOARD_SIZE):
@@ -361,15 +443,13 @@ func _renderer(isPlayerRed: bool):
 						current_cord, 
 						tile_map
 					))
-					tile_map[2].set_cell(current_cord, 0, black_player)
 				else:
 					red_pieces.append(Piece.new(
 						true, 
 						current_cord, 
 						tile_map
 					))
-					tile_map[2].set_cell(current_cord, 0, red_player)
-
+	
 func _render_moves(moves: Array[Vector2i], erase: bool = false):
 	var move_hint = Vector2i(1, 1)
 	for m in moves:

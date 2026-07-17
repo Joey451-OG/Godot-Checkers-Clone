@@ -2,6 +2,7 @@
 
 [ext_resource type="TileSet" uid="uid://cdqhnpcfv0dn4" path="res://assets/textures/base.tres" id="1_j5px3"]
 [ext_resource type="Script" uid="uid://bwmtbw8k5y1uo" path="res://GDScript/main.gd" id="1_twpsu"]
+[ext_resource type="Script" uid="uid://cpry0udn7kdd3" path="res://GDScript/misc_testing.gd" id="3_lrqlo"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_sj43t"]
 
@@ -31,3 +32,4 @@ tile_set = ExtResource("1_j5px3")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1165093824]
 anchor_mode = 0
 zoom = Vector2(4, 4)
+script = ExtResource("3_lrqlo")
