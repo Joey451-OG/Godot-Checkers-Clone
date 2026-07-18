@@ -1,6 +1,9 @@
 extends Node2D
 
-# renderer var	
+# consts and enums
+enum TURN  {BLACK, RED}
+
+# renderer var
 @export var tile_map: Array[TileMapLayer]
 @export var isDebugOn: bool = true
 
@@ -8,10 +11,10 @@ extends Node2D
 var isPlayerRed : bool = true
 var black_pieces : Array[Piece]
 var red_pieces : Array[Piece]
-var isPlayerTurn : bool
 var player_pieces : Array[Piece]
 var opponent_pieces: Array[Piece]
 var moves : Array[Move]
+var turn_direction_multiplier := 1
 
 const BOARD_SIZE : int = 8
 
@@ -20,24 +23,17 @@ var current_piece_index
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	# is the player red?
-	isPlayerTurn = not isPlayerRed
 	
 	_renderer()
+	_two_player_change_turns()
 	
-	if isPlayerRed:
-		player_pieces = red_pieces
-		opponent_pieces = black_pieces
-	else:
-		player_pieces = black_pieces
-		opponent_pieces = red_pieces
+	# not implimenting darker player goes first
 	
 	if isDebugOn:
 		print_debug("Making last player piece a King")
 		player_pieces[-1]._isKing = true
 	
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
+func _input(event: InputEvent) -> void:
 	# moving the pieces
 	'''
 	Stratigy:
@@ -48,8 +44,7 @@ func _process(_delta: float) -> void:
 		5. Else deselect and unhightlight piece
 		6. De-render moves 
 	'''
-	
-	if Input.is_action_pressed("Select"):
+	if event.is_action_pressed("Select"):
 		# step 1
 		var tile_clicked := _get_tile_cord()
 		var piece_index = _search_player_pieces(tile_clicked)
@@ -67,12 +62,43 @@ func _process(_delta: float) -> void:
 			var tmp_to_cord := MOVE_get_to_cord(moves)
 			var tmp_isCapture := MOVE_get_isCapture(moves)
 			
+			var playerHasMoved := false
 			for i in range(len(tmp_to_cord)): 
 				if tile_clicked == tmp_to_cord[i] and not tmp_isCapture[i]:
 					_move_piece(tile_clicked)
+					playerHasMoved = true
 				if tile_clicked == tmp_to_cord[i] and tmp_isCapture[i]:
 					_move_piece(tile_clicked)
 					_capture_piece(moves[i])
+					
+					# player has captured a piece, check for more caputres
+					
+					# 1st, clear out the old moves
+					_render_moves(MOVE_get_to_cord(moves), true)
+					moves.clear()
+					
+					# 2nd, look for new moves and remove any non-caputring ones
+					moves = _calculate_valid_moves(current_piece_index)
+					
+					var tmp_capture : Array[Move]
+					for m in moves:
+						if m.isCapture:
+							tmp_capture.append(m)
+					
+					moves.assign(tmp_capture)
+					
+					# display caputre moves
+					_render_moves(MOVE_get_to_cord(moves))
+					
+					# re-select the current piece
+					player_pieces[current_piece_index].isSelected = true
+					
+					# if len(moves) > 0, return to skip the clear step
+					if len(moves) > 0:
+						return
+					else:
+						# multi-jump has ended, end the move
+						playerHasMoved = true
 			
 			# clear the current selection
 			if current_piece_index != null:
@@ -80,6 +106,10 @@ func _process(_delta: float) -> void:
 				_render_moves(MOVE_get_to_cord(moves), true)
 				moves.clear()
 			
+			# this needs to be last so that we can clear the selection above
+			if playerHasMoved:
+				isPlayerRed = not isPlayerRed
+				_two_player_change_turns()
 		# step 6 is completed at the beginning of _calculate_valid_moves()
 
 func MOVE_get_to_cord(given_moves: Array[Move]) -> Array[Vector2i]:
@@ -98,8 +128,8 @@ func MOVE_get_isCapture(given_moves: Array[Move]) -> Array[bool]:
 
 func _calculate_valid_moves(piece_index: int) -> Array[Move]:
 	var current := player_pieces[piece_index]
-	var left := Vector2i(current.cord.x - 1, current.cord.y - 1)
-	var right := Vector2i(current.cord.x + 1, current.cord.y - 1)
+	var left := current.cord + (Vector2i(-1, -1) * turn_direction_multiplier)
+	var right := current.cord + (Vector2i(1, -1) * turn_direction_multiplier)
 	var player_obsticals : Array
 	var opponent_obsticals : Array
 	var valid_moves : Array[Move]
@@ -168,7 +198,7 @@ func _calculate_valid_moves(piece_index: int) -> Array[Move]:
 	return valid_moves
 
 func _calculate_capture_moves(cord: Vector2i, direction_vector: Vector2i) -> Array[Move]:
-	var check_cord := Vector2i(cord + direction_vector)
+	var check_cord := Vector2i(cord + (direction_vector * turn_direction_multiplier))
 	var op_blank_index = _search_opponent_pieces(check_cord)
 	var pl_blank_index = _search_player_pieces(check_cord)
 	var valid_moves : Array[Move]
@@ -196,10 +226,10 @@ func _capture_piece(move: Move):
 
 func _valid_king_moves(piece_index : int):
 	var current := player_pieces[piece_index]
-	var left := Vector2i(current.cord.x - 1, current.cord.y - 1)
-	var right := Vector2i(current.cord.x + 1, current.cord.y - 1)
-	var left_back := Vector2i(current.cord.x - 1, current.cord.y + 1)
-	var right_back := Vector2i(current.cord.x + 1, current.cord.y + 1)
+	var left := current.cord + (Vector2i(-1, -1) * turn_direction_multiplier)
+	var right := current.cord + (Vector2i(1, -1) * turn_direction_multiplier)
+	var left_back := current.cord + (Vector2i(-1, 1) * turn_direction_multiplier)
+	var right_back := current.cord + (Vector2i(1, 1) * turn_direction_multiplier)
 	var player_obsticals : Array
 	var opponent_obsticals : Array
 	var valid_moves : Array[Move]
@@ -273,7 +303,7 @@ func _valid_king_moves(piece_index : int):
 	return valid_moves
 
 func _check_king_direction_vector(start_tile: Vector2i, vector: Vector2i) -> Array[Move]:
-	var check_tile := start_tile + vector
+	var check_tile := start_tile + (vector * turn_direction_multiplier)
 	var player_obstical = _search_player_pieces(check_tile)
 	var opponent_obstical = _search_opponent_pieces(check_tile)
 	var valid_moves : Array[Move]
@@ -367,6 +397,22 @@ func _search_opponent_pieces(tile: Vector2i) -> Variant:
 			return i
 	
 	return null
+
+func _two_player_change_turns() -> void:
+	if isPlayerRed: # red on the bottom of the board
+		player_pieces = red_pieces
+		opponent_pieces = black_pieces
+		turn_direction_multiplier = 1
+	else:
+		player_pieces = black_pieces
+		opponent_pieces = red_pieces
+		turn_direction_multiplier = -1
+	
+	
+	# god, this spagetti code is really getting messy
+	
+	# needs to be set to null since we are changing turns
+	current_piece_index = null
 
 func _renderer():
 	# draw background
