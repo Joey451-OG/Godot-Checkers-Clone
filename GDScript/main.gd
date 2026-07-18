@@ -5,7 +5,7 @@ enum TURN  {BLACK, RED}
 
 # renderer var
 @export var tile_map: Array[TileMapLayer]
-@export var isDebugOn: bool = true
+@export var isDebugOn: bool = false
 
 # shared
 var isPlayerRed : bool = true
@@ -226,10 +226,10 @@ func _capture_piece(move: Move):
 
 func _valid_king_moves(piece_index : int):
 	var current := player_pieces[piece_index]
-	var left := current.cord + (Vector2i(-1, -1) * turn_direction_multiplier)
-	var right := current.cord + (Vector2i(1, -1) * turn_direction_multiplier)
-	var left_back := current.cord + (Vector2i(-1, 1) * turn_direction_multiplier)
-	var right_back := current.cord + (Vector2i(1, 1) * turn_direction_multiplier)
+	var left := current.cord + Vector2i(-1, -1)
+	var right := current.cord + Vector2i(1, -1)
+	var left_back := current.cord + Vector2i(-1, 1)
+	var right_back := current.cord + Vector2i(1, 1)
 	var player_obsticals : Array
 	var opponent_obsticals : Array
 	var valid_moves : Array[Move]
@@ -284,19 +284,19 @@ func _valid_king_moves(piece_index : int):
 		
 		if opponent_obsticals[i] != null: # if this index is not null, then player_obsticals' index must be null
 			if i == 0:
-				var capture_moves := _calculate_capture_moves(left, Vector2i(-1, -1))
+				var capture_moves := _calculate_capture_moves(left, Vector2i(-1, -1) * turn_direction_multiplier)
 				for move in capture_moves:
 					valid_moves.append(move)
 			if i == 1:
-				var capture_moves := _calculate_capture_moves(left_back, Vector2i(-1, 1))
+				var capture_moves := _calculate_capture_moves(left_back, Vector2i(-1, 1) * turn_direction_multiplier)
 				for move in capture_moves:
 					valid_moves.append(move)
 			if i == 2:
-				var capture_moves := _calculate_capture_moves(right, Vector2i(1, -1))
+				var capture_moves := _calculate_capture_moves(right, Vector2i(1, -1) * turn_direction_multiplier)
 				for move in capture_moves:
 					valid_moves.append(move)
 			if i == 3:
-				var capture_moves := _calculate_capture_moves(right_back, Vector2i(1, 1))
+				var capture_moves := _calculate_capture_moves(right_back, Vector2i(1, 1) * turn_direction_multiplier)
 				for move in capture_moves:
 					valid_moves.append(move)
 		
