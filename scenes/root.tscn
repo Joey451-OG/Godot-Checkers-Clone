@@ -3,6 +3,17 @@
 [ext_resource type="TileSet" uid="uid://cdqhnpcfv0dn4" path="res://assets/textures/base.tres" id="1_j5px3"]
 [ext_resource type="Script" uid="uid://bwmtbw8k5y1uo" path="res://GDScript/main.gd" id="1_twpsu"]
 [ext_resource type="Script" uid="uid://cpry0udn7kdd3" path="res://GDScript/misc_testing.gd" id="3_lrqlo"]
+[ext_resource type="Script" uid="uid://sawxwgikrkg4" path="res://GDScript/SFXController.gd" id="4_sqa0i"]
+[ext_resource type="AudioStream" uid="uid://cq01m7p6aj3nh" path="res://assets/sound/music/john-denver_take-me-home-country-roads.mp3" id="4_vgks2"]
+[ext_resource type="AudioStream" uid="uid://xd8onuq8ht7p" path="res://assets/sound/sfx/piece_moves/wood-1.mp3" id="5_xsp7o"]
+[ext_resource type="AudioStream" uid="uid://bn1v2fsjhmhc0" path="res://assets/sound/sfx/piece_moves/wood-2.mp3" id="6_l5cgh"]
+[ext_resource type="AudioStream" uid="uid://djvpnudxnx2o4" path="res://assets/sound/sfx/piece_moves/wood-3.mp3" id="7_vgks2"]
+[ext_resource type="AudioStream" uid="uid://k40vjt5kiqyx" path="res://assets/sound/sfx/piece_moves/wood-4.mp3" id="8_dylgi"]
+[ext_resource type="AudioStream" uid="uid://t1wkmax6ji42" path="res://assets/sound/sfx/piece_moves/wood-5.mp3" id="9_jrhyn"]
+[ext_resource type="AudioStream" uid="uid://bt52y4f618klg" path="res://assets/sound/sfx/piece_moves/wood-6.mp3" id="10_log26"]
+[ext_resource type="AudioStream" uid="uid://cusgbo18dgh6y" path="res://assets/sound/sfx/piece_moves/wood-7.mp3" id="11_gt4lb"]
+[ext_resource type="AudioStream" uid="uid://ddeemfhri4x5r" path="res://assets/sound/sfx/piece_moves/wood-8.mp3" id="12_ya6yc"]
+[ext_resource type="AudioStream" uid="uid://b6xfuryq41y41" path="res://assets/sound/sfx/metallic_cling1.mp3" id="13_l5cgh"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_sj43t"]
 
@@ -33,3 +44,17 @@ tile_set = ExtResource("1_j5px3")
 anchor_mode = 0
 zoom = Vector2(4, 4)
 script = ExtResource("3_lrqlo")
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=142093606]
+stream = ExtResource("4_vgks2")
+autoplay = true
+bus = &"music"
+
+[node name="SFXPlayer" type="AudioStreamPlayer" parent="." unique_id=120068203]
+bus = &"sfx"
+script = ExtResource("4_sqa0i")
+wood_sounds = Array[AudioStreamMP3]([ExtResource("5_xsp7o"), ExtResource("6_l5cgh"), ExtResource("7_vgks2"), ExtResource("8_dylgi"), ExtResource("9_jrhyn"), ExtResource("10_log26"), ExtResource("11_gt4lb"), ExtResource("12_ya6yc")])
+crowned_sound = ExtResource("13_l5cgh")
+
+[connection signal="piece_crowned" from="." to="SFXPlayer" method="_on_root_piece_crowned"]
+[connection signal="piece_moved" from="." to="SFXPlayer" method="_on_root_piece_moved"]

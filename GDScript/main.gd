@@ -3,6 +3,10 @@ extends Node2D
 # consts and enums
 enum TURN  {BLACK, RED}
 
+# signals
+signal piece_moved
+signal piece_crowned
+
 # renderer var
 @export var tile_map: Array[TileMapLayer]
 @export var isDebugOn: bool = false
@@ -73,11 +77,11 @@ func _input(event: InputEvent) -> void:
 					
 					# player has captured a piece, check for more caputres
 					
-					# 1st, clear out the old moves
+					# clear out the old moves
 					_render_moves(MOVE_get_to_cord(moves), true)
 					moves.clear()
 					
-					# 2nd, look for new moves and remove any non-caputring ones
+					# look for new moves and remove any non-caputring ones
 					moves = _calculate_valid_moves(current_piece_index)
 					
 					var tmp_capture : Array[Move]
@@ -336,7 +340,12 @@ func _move_piece(location: Vector2i) -> void:
 	# step 1
 	player_pieces[current_piece_index].isSelected = false
 	
-	# step 4
+	emit_signal("piece_moved")
+	
+	var king_row_check = _normalize_to_board_cord(location).y
+	if not player_pieces[current_piece_index].get_isKing() and (king_row_check == 0 or king_row_check == 7):
+		emit_signal("piece_crowned")
+	
 	player_pieces[current_piece_index].cord = location
 
 func _validate_piece(piece_index) -> void:

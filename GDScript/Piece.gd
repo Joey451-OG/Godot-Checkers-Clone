@@ -51,7 +51,6 @@ var isSelected : bool = false:
 		isSelected = value
 		_update_highlight()
 
-
 @warning_ignore("shadowed_variable")
 func _init(isRed: bool, cord: Vector2i, tile_map: Array[TileMapLayer]):
 	if isRed: 
