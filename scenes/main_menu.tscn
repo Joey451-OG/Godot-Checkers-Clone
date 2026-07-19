@@ -1,0 +1,109 @@
+[gd_scene format=3 uid="uid://nrporo40nfs3"]
+
+[ext_resource type="Script" uid="uid://bb5h81g3gfvow" path="res://GDScript/MenuController.gd" id="1_bqqt6"]
+[ext_resource type="Texture2D" uid="uid://cxhfv328036ma" path="res://assets/textures/checker_board-2.png" id="1_ekxnf"]
+[ext_resource type="FontFile" uid="uid://dskbijr1fluja" path="res://assets/fonts/cowboy-hippie-pro/Cowboy_Hippie_Pro.otf" id="1_l6cm7"]
+[ext_resource type="PackedScene" uid="uid://b0rbcnru2dksb" path="res://scenes/game.tscn" id="2_wu84c"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ekxnf"]
+bg_color = Color(0, 0, 0, 0.27450982)
+
+[sub_resource type="Theme" id="Theme_i58cg"]
+
+[sub_resource type="Theme" id="Theme_sj43t"]
+default_base_scale = 1.0
+default_font = ExtResource("1_l6cm7")
+default_font_size = 50
+
+[node name="MainMenu" type="Control" unique_id=202129030]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_bqqt6")
+game = ExtResource("2_wu84c")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1360790923]
+layout_mode = 0
+offset_left = -604.0
+offset_top = -8.999985
+offset_right = 38.0
+offset_bottom = 633.0
+rotation = -0.384187
+scale = Vector2(3.2298048, 3.2298048)
+texture = ExtResource("1_ekxnf")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=375801986]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ekxnf")
+
+[node name="Label" type="Label" parent="PanelContainer" unique_id=1269000257]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+theme = SubResource("Theme_i58cg")
+theme_type_variation = &"HeaderLarge"
+theme_override_fonts/font = ExtResource("1_l6cm7")
+theme_override_font_sizes/font_size = 300
+text = "CHECKERS"
+
+[node name="CenterContainer" type="CenterContainer" parent="PanelContainer" unique_id=1265201402]
+custom_minimum_size = Vector2(400, 400)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/CenterContainer" unique_id=176784662]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+theme = SubResource("Theme_sj43t")
+alignment = 1
+
+[node name="PanelContainer" type="PanelContainer" parent="PanelContainer/CenterContainer/VBoxContainer" unique_id=2080397835]
+custom_minimum_size = Vector2(400, 100)
+layout_mode = 2
+
+[node name="Button" type="Button" parent="PanelContainer/CenterContainer/VBoxContainer/PanelContainer" unique_id=989749550]
+layout_mode = 2
+text = "start"
+
+[node name="HSeparator" type="HSeparator" parent="PanelContainer/CenterContainer/VBoxContainer" unique_id=271668696]
+layout_mode = 2
+theme_override_constants/separation = 200
+
+[node name="Label" type="Label" parent="PanelContainer/CenterContainer/VBoxContainer" unique_id=938761021]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 30
+text = "Red player:"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/CenterContainer/VBoxContainer" unique_id=2026220598]
+custom_minimum_size = Vector2(100, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/separation = 100
+alignment = 1
+
+[node name="Label" type="Label" parent="PanelContainer/CenterContainer/VBoxContainer/HBoxContainer" unique_id=1670176725]
+layout_mode = 2
+text = "Player 1"
+
+[node name="CheckButton" type="CheckButton" parent="PanelContainer/CenterContainer/VBoxContainer/HBoxContainer" unique_id=173801477]
+layout_mode = 2
+size_flags_horizontal = 4
+tooltip_text = "left - player one is red
+right - player two is red"
+
+[node name="Label2" type="Label" parent="PanelContainer/CenterContainer/VBoxContainer/HBoxContainer" unique_id=474483338]
+layout_mode = 2
+text = "Player 2"
+
+[connection signal="pressed" from="PanelContainer/CenterContainer/VBoxContainer/PanelContainer/Button" to="." method="_on_play_pressed"]
+[connection signal="toggled" from="PanelContainer/CenterContainer/VBoxContainer/HBoxContainer/CheckButton" to="." method="_on_check_button_toggled"]

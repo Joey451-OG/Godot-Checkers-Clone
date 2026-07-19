@@ -11,9 +11,17 @@ config_version=5
 [application]
 
 config/name="Checkers"
-run/main_scene="uid://b0rbcnru2dksb"
+run/main_scene="uid://nrporo40nfs3"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
+
+[audio]
+
+buses/default_bus_layout="uid://fjkk10lb45ma"
+
+[autoload]
+
+Globals="*uid://bic3ugom56w7g"
 
 [display]
 
@@ -26,6 +34,10 @@ window/stretch/aspect="expand"
 [editor_plugins]
 
 enabled=PackedStringArray()
+
+[gui]
+
+theme/default_font_multichannel_signed_distance_field=true
 
 [input]
 

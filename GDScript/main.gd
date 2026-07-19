@@ -2,6 +2,9 @@ extends Node2D
 
 # consts and enums
 enum TURN  {BLACK, RED}
+const BOARD_SIZE : int = 8
+@onready var UI = $WinUiScene
+@onready var CAMERA: Camera2D = $Camera2D
 
 # signals
 signal piece_moved
@@ -12,7 +15,7 @@ signal piece_crowned
 @export var isDebugOn: bool = false
 
 # shared
-var isPlayerRed : bool = true
+var isPlayerRed : bool = Globals.isPlayerOneRed
 var black_pieces : Array[Piece]
 var red_pieces : Array[Piece]
 var player_pieces : Array[Piece]
@@ -20,16 +23,21 @@ var opponent_pieces: Array[Piece]
 var moves : Array[Move]
 var turn_direction_multiplier := 1
 
-const BOARD_SIZE : int = 8
 
 # process globals
 var current_piece_index
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	UI.hide()
+	UI.size = get_viewport().get_visible_rect().size
+	UI.scale = Vector2(1 / CAMERA.zoom.x, 1 / CAMERA.zoom.y)
 	
 	_renderer()
 	_two_player_change_turns()
+	
+	# hack: multiply turn_direction_multiplier by -1 to revert the turn switch for the first turn
+	turn_direction_multiplier *= -1
 	
 	# not implimenting darker player goes first
 	
@@ -38,6 +46,8 @@ func _ready() -> void:
 		player_pieces[-1]._isKing = true
 	
 func _input(event: InputEvent) -> void:
+	_check_game_end()
+	
 	# moving the pieces
 	'''
 	Stratigy:
@@ -325,6 +335,15 @@ func _check_king_direction_vector(start_tile: Vector2i, vector: Vector2i) -> Arr
 	
 	return valid_moves
 
+func _check_game_end() -> void:
+	if len(black_pieces) == 0:
+		UI.show()
+		UI.get_child(0).get_child(0).get_child(1).show()
+	
+	if len(red_pieces) == 0:
+		UI.show()
+		UI.get_child(0).get_child(0).get_child(0).show()
+
 func _move_piece(location: Vector2i) -> void:
 	'''
 	NOTE: Steps 2 - 3 are now handled by the Piece class
@@ -391,7 +410,6 @@ func _normalize_to_board_cord(cord : Vector2i) -> Vector2i:
 	var board_origin := Vector2i(4, 2)
 	return Vector2i(cord.x - board_origin.x, cord.y - board_origin.y)
 
-
 func _search_player_pieces(tile: Vector2i) -> Variant:
 	for i in range(len(player_pieces)):
 		if player_pieces[i].cord == tile:
@@ -411,12 +429,11 @@ func _two_player_change_turns() -> void:
 	if isPlayerRed: # red on the bottom of the board
 		player_pieces = red_pieces
 		opponent_pieces = black_pieces
-		turn_direction_multiplier = 1
 	else:
 		player_pieces = black_pieces
 		opponent_pieces = red_pieces
-		turn_direction_multiplier = -1
 	
+	turn_direction_multiplier *= -1
 	
 	# god, this spagetti code is really getting messy
 	

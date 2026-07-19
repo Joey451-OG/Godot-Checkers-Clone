@@ -1,0 +1,76 @@
+[gd_scene format=3 uid="uid://b0rbcnru2dksb"]
+
+[ext_resource type="Script" uid="uid://bwmtbw8k5y1uo" path="res://GDScript/main.gd" id="1_rysoc"]
+[ext_resource type="TileSet" uid="uid://cdqhnpcfv0dn4" path="res://assets/textures/base.tres" id="2_ssvqc"]
+[ext_resource type="Script" uid="uid://cpry0udn7kdd3" path="res://GDScript/misc_testing.gd" id="3_264po"]
+[ext_resource type="Script" uid="uid://jtbwuopb48oc" path="res://GDScript/MusicController.gd" id="4_1kice"]
+[ext_resource type="AudioStream" uid="uid://cq01m7p6aj3nh" path="res://assets/sound/music/john-denver_take-me-home-country-roads.mp3" id="5_5newe"]
+[ext_resource type="AudioStream" uid="uid://dyxj470ro1tq" path="res://assets/sound/music/rolling-stones_wild-horses.mp3" id="6_37s47"]
+[ext_resource type="AudioStream" uid="uid://dp8kqdn5lrxbq" path="res://assets/sound/music/toby-fox_dogsong_preformed-by_tom-brier.mp3" id="7_bt5mj"]
+[ext_resource type="Script" uid="uid://sawxwgikrkg4" path="res://GDScript/SFXController.gd" id="8_e1j6l"]
+[ext_resource type="AudioStream" uid="uid://xd8onuq8ht7p" path="res://assets/sound/sfx/piece_moves/wood-1.mp3" id="9_pl11u"]
+[ext_resource type="AudioStream" uid="uid://bn1v2fsjhmhc0" path="res://assets/sound/sfx/piece_moves/wood-2.mp3" id="10_bhx41"]
+[ext_resource type="AudioStream" uid="uid://djvpnudxnx2o4" path="res://assets/sound/sfx/piece_moves/wood-3.mp3" id="11_qnb83"]
+[ext_resource type="AudioStream" uid="uid://k40vjt5kiqyx" path="res://assets/sound/sfx/piece_moves/wood-4.mp3" id="12_sww3w"]
+[ext_resource type="AudioStream" uid="uid://t1wkmax6ji42" path="res://assets/sound/sfx/piece_moves/wood-5.mp3" id="13_suyxu"]
+[ext_resource type="AudioStream" uid="uid://bt52y4f618klg" path="res://assets/sound/sfx/piece_moves/wood-6.mp3" id="14_sgl2t"]
+[ext_resource type="AudioStream" uid="uid://cusgbo18dgh6y" path="res://assets/sound/sfx/piece_moves/wood-7.mp3" id="15_qouja"]
+[ext_resource type="AudioStream" uid="uid://ddeemfhri4x5r" path="res://assets/sound/sfx/piece_moves/wood-8.mp3" id="16_wljb1"]
+[ext_resource type="AudioStream" uid="uid://b6xfuryq41y41" path="res://assets/sound/sfx/metallic_cling1.mp3" id="17_v2yb1"]
+[ext_resource type="PackedScene" uid="uid://cm0mfvxsxnyql" path="res://scenes/win_ui_scene.tscn" id="18_ssvqc"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_sj43t"]
+
+[node name="root" type="Node2D" unique_id=1204750993 node_paths=PackedStringArray("tile_map")]
+material = SubResource("CanvasItemMaterial_sj43t")
+script = ExtResource("1_rysoc")
+tile_map = [NodePath("TileMapLayers/Background"), NodePath("TileMapLayers/GameBoard"), NodePath("TileMapLayers/Players"), NodePath("TileMapLayers/Effects")]
+
+[node name="TileMapLayers" type="Node2D" parent="." unique_id=1687046794]
+
+[node name="Background" type="TileMapLayer" parent="TileMapLayers" unique_id=1044427569]
+texture_filter = 1
+tile_set = ExtResource("2_ssvqc")
+
+[node name="GameBoard" type="TileMapLayer" parent="TileMapLayers" unique_id=1530068043]
+texture_filter = 1
+tile_set = ExtResource("2_ssvqc")
+
+[node name="Players" type="TileMapLayer" parent="TileMapLayers" unique_id=1534709710]
+texture_filter = 1
+tile_set = ExtResource("2_ssvqc")
+
+[node name="Effects" type="TileMapLayer" parent="TileMapLayers" unique_id=1014545193]
+texture_filter = 1
+tile_set = ExtResource("2_ssvqc")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1165093824]
+anchor_mode = 0
+zoom = Vector2(4, 4)
+script = ExtResource("3_264po")
+
+[node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=142093606]
+autoplay = true
+bus = &"music"
+script = ExtResource("4_1kice")
+music_files = Array[AudioStreamMP3]([ExtResource("5_5newe"), ExtResource("6_37s47"), ExtResource("7_bt5mj")])
+
+[node name="SFXPlayer" type="AudioStreamPlayer" parent="." unique_id=120068203]
+bus = &"sfx"
+script = ExtResource("8_e1j6l")
+wood_sounds = Array[AudioStreamMP3]([ExtResource("9_pl11u"), ExtResource("10_bhx41"), ExtResource("11_qnb83"), ExtResource("12_sww3w"), ExtResource("13_suyxu"), ExtResource("14_sgl2t"), ExtResource("15_qouja"), ExtResource("16_wljb1")])
+crowned_sound = ExtResource("17_v2yb1")
+
+[node name="WinUiScene" parent="." unique_id=1039439154 instance=ExtResource("18_ssvqc")]
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 1280.0
+offset_bottom = 960.0
+grow_horizontal = 1
+grow_vertical = 1
+scale = Vector2(0.25, 0.25)
+
+[connection signal="piece_crowned" from="." to="SFXPlayer" method="_on_root_piece_crowned"]
+[connection signal="piece_moved" from="." to="SFXPlayer" method="_on_root_piece_moved"]
+[connection signal="finished" from="MusicPlayer" to="MusicPlayer" method="_on_finished"]

@@ -1,0 +1,9 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://dd0oll56aeun0"]
+
+[ext_resource type="FontFile" uid="uid://dskbijr1fluja" path="res://assets/fonts/cowboy-hippie-pro/Cowboy_Hippie_Pro.otf" id="1_xqvfg"]
+
+[resource]
+font = ExtResource("1_xqvfg")
+font_size = 300
+font_color = Color(0.6745098, 0.19607843, 0.19607843, 1)
+outline_size = 45

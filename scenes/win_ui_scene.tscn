@@ -1,0 +1,148 @@
+[gd_scene format=3 uid="uid://cm0mfvxsxnyql"]
+
+[ext_resource type="Script" uid="uid://be2y3jktomqdk" path="res://GDScript/WinUIController.gd" id="1_a1uy1"]
+[ext_resource type="FontFile" uid="uid://dskbijr1fluja" path="res://assets/fonts/cowboy-hippie-pro/Cowboy_Hippie_Pro.otf" id="1_bvgc2"]
+[ext_resource type="LabelSettings" uid="uid://dd0oll56aeun0" path="res://assets/textures/red_text.tres" id="2_a1uy1"]
+[ext_resource type="PackedScene" uid="uid://nrporo40nfs3" path="res://scenes/main_menu.tscn" id="2_dmuyu"]
+[ext_resource type="LabelSettings" uid="uid://psictxeh40ov" path="res://assets/textures/black_text.tres" id="3_1757v"]
+[ext_resource type="PackedScene" uid="uid://b0rbcnru2dksb" path="res://scenes/game.tscn" id="3_km1ia"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sdogw"]
+bg_color = Color(0, 0, 0, 0.20392157)
+
+[sub_resource type="LabelSettings" id="LabelSettings_dmuyu"]
+font = ExtResource("1_bvgc2")
+font_size = 50
+font_color = Color(0, 0, 0, 1)
+outline_size = 33
+
+[node name="WinUiScene" type="Control" unique_id=1039439154]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_a1uy1")
+main_menu = ExtResource("2_dmuyu")
+game = ExtResource("3_km1ia")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1198042575]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="Panel" type="Panel" parent="MarginContainer" unique_id=1284517972]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_sdogw")
+
+[node name="RedWins" type="Label" parent="MarginContainer/Panel" unique_id=538029280]
+visible = false
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0, -1)
+theme_override_colors/font_color = Color(0.6745098, 0.19607843, 0.19607843, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("1_bvgc2")
+theme_override_font_sizes/font_size = 300
+text = "RED WINS"
+label_settings = ExtResource("2_a1uy1")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BlackWins" type="Label" parent="MarginContainer/Panel" unique_id=556828238]
+visible = false
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -11.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0, -1)
+theme_override_colors/font_color = Color(0.6745098, 0.19607843, 0.19607843, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("1_bvgc2")
+theme_override_font_sizes/font_size = 300
+text = "BLACK WINS"
+label_settings = ExtResource("3_1757v")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/Panel" unique_id=340909259]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.2
+anchor_top = 0.5
+anchor_right = 0.8
+anchor_bottom = 0.95
+offset_left = 178.0
+offset_top = 17.0
+offset_right = -178.0
+offset_bottom = -17.0
+
+[node name="play_again" type="Button" parent="MarginContainer/Panel/VBoxContainer" unique_id=1162893401]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/Panel/VBoxContainer/play_again" unique_id=123687212]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "play again"
+label_settings = SubResource("LabelSettings_dmuyu")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="play_again2" type="Button" parent="MarginContainer/Panel/VBoxContainer" unique_id=585220061]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/Panel/VBoxContainer/play_again2" unique_id=1042061239]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "main menu"
+label_settings = SubResource("LabelSettings_dmuyu")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="play_again3" type="Button" parent="MarginContainer/Panel/VBoxContainer" unique_id=1492409069]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Label" type="Label" parent="MarginContainer/Panel/VBoxContainer/play_again3" unique_id=565441010]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "exit"
+label_settings = SubResource("LabelSettings_dmuyu")
+horizontal_alignment = 1
+vertical_alignment = 1
