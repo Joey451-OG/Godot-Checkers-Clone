@@ -17,6 +17,8 @@
 [ext_resource type="AudioStream" uid="uid://cusgbo18dgh6y" path="res://assets/sound/sfx/piece_moves/wood-7.mp3" id="15_qouja"]
 [ext_resource type="AudioStream" uid="uid://ddeemfhri4x5r" path="res://assets/sound/sfx/piece_moves/wood-8.mp3" id="16_wljb1"]
 [ext_resource type="AudioStream" uid="uid://b6xfuryq41y41" path="res://assets/sound/sfx/metallic_cling1.mp3" id="17_v2yb1"]
+[ext_resource type="PackedScene" uid="uid://cm0mfvxsxnyql" path="res://scenes/win_ui_scene.tscn" id="18_ssvqc"]
+
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_sj43t"]
 
 [node name="root" type="Node2D" unique_id=1204750993 node_paths=PackedStringArray("tile_map")]
@@ -58,6 +60,12 @@ bus = &"sfx"
 script = ExtResource("8_e1j6l")
 wood_sounds = Array[AudioStreamMP3]([ExtResource("9_pl11u"), ExtResource("10_bhx41"), ExtResource("11_qnb83"), ExtResource("12_sww3w"), ExtResource("13_suyxu"), ExtResource("14_sgl2t"), ExtResource("15_qouja"), ExtResource("16_wljb1")])
 crowned_sound = ExtResource("17_v2yb1")
+
+[node name="WinUiScene" parent="." unique_id=1039439154 instance=ExtResource("18_ssvqc")]
+z_index = 10
+offset_right = 1280.0
+offset_bottom = 920.0
+scale = Vector2(0.25, 0.25)
 
 [connection signal="piece_crowned" from="." to="SFXPlayer" method="_on_root_piece_crowned"]
 [connection signal="piece_moved" from="." to="SFXPlayer" method="_on_root_piece_moved"]

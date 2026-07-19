@@ -39,6 +39,28 @@ theme_override_constants/margin_bottom = 20
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_sdogw")
 
+[node name="BlackWins" type="Label" parent="MarginContainer/Panel" unique_id=556828238]
+visible = false
+layout_mode = 1
+anchors_preset = 14
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+offset_top = -155.5
+offset_bottom = 155.5
+grow_horizontal = 2
+grow_vertical = 2
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0, -1)
+theme_override_colors/font_color = Color(0.6745098, 0.19607843, 0.19607843, 1)
+theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("1_bvgc2")
+theme_override_font_sizes/font_size = 300
+text = "BLACK WINS"
+label_settings = ExtResource("3_1757v")
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="RedWins" type="Label" parent="MarginContainer/Panel" unique_id=538029280]
 visible = false
 layout_mode = 1
@@ -58,28 +80,6 @@ theme_override_fonts/font = ExtResource("1_bvgc2")
 theme_override_font_sizes/font_size = 300
 text = "RED WINS"
 label_settings = ExtResource("2_a1uy1")
-horizontal_alignment = 1
-vertical_alignment = 1
-
-[node name="BlackWins" type="Label" parent="MarginContainer/Panel" unique_id=556828238]
-visible = false
-layout_mode = 1
-anchors_preset = 14
-anchor_top = 0.5
-anchor_right = 1.0
-anchor_bottom = 0.5
-offset_top = -11.5
-offset_bottom = 11.5
-grow_horizontal = 2
-grow_vertical = 2
-offset_transform_enabled = true
-offset_transform_position_ratio = Vector2(0, -1)
-theme_override_colors/font_color = Color(0.6745098, 0.19607843, 0.19607843, 1)
-theme_override_colors/font_outline_color = Color(1, 1, 1, 1)
-theme_override_fonts/font = ExtResource("1_bvgc2")
-theme_override_font_sizes/font_size = 300
-text = "BLACK WINS"
-label_settings = ExtResource("3_1757v")
 horizontal_alignment = 1
 vertical_alignment = 1
 
@@ -111,11 +111,11 @@ label_settings = SubResource("LabelSettings_dmuyu")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="play_again2" type="Button" parent="MarginContainer/Panel/VBoxContainer" unique_id=585220061]
+[node name="main_menu" type="Button" parent="MarginContainer/Panel/VBoxContainer" unique_id=585220061]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="MarginContainer/Panel/VBoxContainer/play_again2" unique_id=1042061239]
+[node name="Label" type="Label" parent="MarginContainer/Panel/VBoxContainer/main_menu" unique_id=1042061239]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -127,11 +127,11 @@ label_settings = SubResource("LabelSettings_dmuyu")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="play_again3" type="Button" parent="MarginContainer/Panel/VBoxContainer" unique_id=1492409069]
+[node name="exit" type="Button" parent="MarginContainer/Panel/VBoxContainer" unique_id=1492409069]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Label" type="Label" parent="MarginContainer/Panel/VBoxContainer/play_again3" unique_id=565441010]
+[node name="Label" type="Label" parent="MarginContainer/Panel/VBoxContainer/exit" unique_id=565441010]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -142,3 +142,7 @@ text = "exit"
 label_settings = SubResource("LabelSettings_dmuyu")
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[connection signal="pressed" from="MarginContainer/Panel/VBoxContainer/play_again" to="." method="_on_play_again_pressed"]
+[connection signal="pressed" from="MarginContainer/Panel/VBoxContainer/main_menu" to="." method="_on_main_menu_pressed"]
+[connection signal="pressed" from="MarginContainer/Panel/VBoxContainer/exit" to="." method="_on_exit_pressed"]

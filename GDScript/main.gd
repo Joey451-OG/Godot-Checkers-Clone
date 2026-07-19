@@ -44,10 +44,11 @@ func _ready() -> void:
 	if isDebugOn:
 		print_debug("Making last player piece a King")
 		player_pieces[-1]._isKing = true
-	
-func _input(event: InputEvent) -> void:
+
+func _process(_delta: float) -> void:
 	_check_game_end()
-	
+
+func _input(event: InputEvent) -> void:
 	# moving the pieces
 	'''
 	Stratigy:
