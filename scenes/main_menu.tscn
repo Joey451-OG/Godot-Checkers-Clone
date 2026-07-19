@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://bb5h81g3gfvow" path="res://GDScript/MenuController.gd" id="1_bqqt6"]
 [ext_resource type="Texture2D" uid="uid://cxhfv328036ma" path="res://assets/textures/checker_board-2.png" id="1_ekxnf"]
 [ext_resource type="FontFile" uid="uid://dskbijr1fluja" path="res://assets/fonts/cowboy-hippie-pro/Cowboy_Hippie_Pro.otf" id="1_l6cm7"]
-[ext_resource type="PackedScene" uid="uid://b0rbcnru2dksb" path="res://scenes/game.tscn" id="2_wu84c"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ekxnf"]
 bg_color = Color(0, 0, 0, 0.27450982)
@@ -23,7 +22,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_bqqt6")
-game = ExtResource("2_wu84c")
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1360790923]
 layout_mode = 0
