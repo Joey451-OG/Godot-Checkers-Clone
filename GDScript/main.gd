@@ -26,6 +26,7 @@ var turn_direction_multiplier := 1
 
 # process globals
 var current_piece_index
+var isChainMove := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -63,6 +64,20 @@ func _input(event: InputEvent) -> void:
 		# step 1
 		var tile_clicked := _get_tile_cord()
 		var piece_index = _search_player_pieces(tile_clicked)
+		var _forced_moves : Array[Move] = []
+		
+		# step 1.5, chain move locking
+		if isChainMove and piece_index != null and piece_index != current_piece_index:
+			# player has selected a non-chain moved piece
+			return
+		elif piece_index == null:
+			# player gives up chain move, set isChainMove to false
+			isChainMove = false
+		
+		# step 1.75
+		if Globals.isPlayingWithForcedCapture:
+			_forced_moves = _calculate_forced_moves()
+			print("FORCED " + str(_forced_moves))
 		
 		# step 2
 		_validate_piece(piece_index)
@@ -70,7 +85,24 @@ func _input(event: InputEvent) -> void:
 		# step 3
 		if piece_index != null:
 			moves = _calculate_valid_moves(piece_index)
-			_render_moves(MOVE_get_to_cord(moves))
+			
+			if Globals.isPlayingWithForcedCapture and len(_forced_moves) > 0:
+				moves = _forced_moves
+				
+				# find index to display
+				var displayed_index  = null
+				for vect_index in range(len(moves)):
+					if player_pieces[piece_index].cord == moves[vect_index].from_cord:
+						displayed_index = vect_index
+				
+				if displayed_index == null:
+					player_pieces[current_piece_index].isSelected = false
+					return
+			
+				_render_moves(MOVE_get_to_cord([moves[displayed_index]]))
+			
+			else:
+				_render_moves(MOVE_get_to_cord(moves))
 		
 		# step 4
 		if piece_index == null:
@@ -110,10 +142,12 @@ func _input(event: InputEvent) -> void:
 					
 					# if len(moves) > 0, return to skip the clear step
 					if len(moves) > 0:
+						isChainMove = true
 						return
 					else:
 						# multi-jump has ended, end the move
 						playerHasMoved = true
+						isChainMove = false
 			
 			# clear the current selection
 			if current_piece_index != null:
@@ -129,6 +163,7 @@ func _input(event: InputEvent) -> void:
 
 func MOVE_get_to_cord(given_moves: Array[Move]) -> Array[Vector2i]:
 	var ret : Array[Vector2i] 
+	
 	for m in given_moves:
 		ret.append(m.to_cord)
 	
@@ -136,12 +171,32 @@ func MOVE_get_to_cord(given_moves: Array[Move]) -> Array[Vector2i]:
 
 func MOVE_get_isCapture(given_moves: Array[Move]) -> Array[bool]:
 	var ret : Array[bool]
+	
 	for m in given_moves:
 		ret.append(m.isCapture)
 	
 	return ret
 
-func _calculate_valid_moves(piece_index: int) -> Array[Move]:
+func MOVE_get_from_cord(given_moves: Array[Move]) -> Array[Vector2i]:
+	var ret : Array[Vector2i]
+	
+	for m in given_moves:
+		ret.append(m.from_cord)
+	
+	return ret
+
+func _calculate_forced_moves() -> Array[Move]:
+	var forced_moves : Array[Move]
+	
+	for i in range(len(player_pieces)):
+		var tmp := _calculate_valid_moves(i, true)
+		for m in tmp:
+			if m.isCapture:
+				forced_moves.append(m)
+
+	return forced_moves
+
+func _calculate_valid_moves(piece_index: int, isForcedCapture: bool = false) -> Array[Move]:
 	var current := player_pieces[piece_index]
 	var left := current.cord + (Vector2i(-1, -1) * turn_direction_multiplier)
 	var right := current.cord + (Vector2i(1, -1) * turn_direction_multiplier)
@@ -150,9 +205,11 @@ func _calculate_valid_moves(piece_index: int) -> Array[Move]:
 	var valid_moves : Array[Move]
 	
 	# Derender previous moves and clear
-	_render_moves(MOVE_get_to_cord(moves), true)
-	moves.clear()
+	if not isForcedCapture:
+		moves.clear()
 	
+	_render_moves(MOVE_get_to_cord(moves), true)
+
 	if not current.get_isKing():
 		# check for any obsitcals in Vector2i(x - 1, y - 1) and 
 		# Vector2i(x + 1, y - 1), these are the two possible moves if open
@@ -221,7 +278,7 @@ func _calculate_capture_moves(cord: Vector2i, direction_vector: Vector2i) -> Arr
 	if pl_blank_index == null and op_blank_index == null and _validate_potential_move(check_cord):
 		# Found a blank behind the cord
 		var current_move = Move.new(
-			cord - direction_vector,
+			cord - (direction_vector * turn_direction_multiplier),
 			check_cord,
 			true
 		)

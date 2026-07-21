@@ -14,6 +14,18 @@ default_base_scale = 1.0
 default_font = ExtResource("1_l6cm7")
 default_font_size = 50
 
+[sub_resource type="LabelSettings" id="LabelSettings_bqqt6"]
+font = ExtResource("1_l6cm7")
+font_size = 30
+font_color = Color(0.6745098, 0.19607843, 0.19607843, 1)
+outline_size = 15
+
+[sub_resource type="LabelSettings" id="LabelSettings_wu84c"]
+font = ExtResource("1_l6cm7")
+font_size = 20
+font_color = Color(0, 0, 0, 1)
+outline_size = 10
+
 [node name="MainMenu" type="Control" unique_id=202129030]
 layout_mode = 3
 anchors_preset = 15
@@ -103,5 +115,55 @@ right - player two is red"
 layout_mode = 2
 text = "Player 2"
 
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=35615259]
+custom_minimum_size = Vector2(5, 5)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.7
+anchor_top = 0.7
+anchor_right = 0.95
+anchor_bottom = 0.95
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Alternate Game Mode" type="Label" parent="MarginContainer" unique_id=102050619]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+text = "Alternate Game Mode"
+label_settings = SubResource("LabelSettings_bqqt6")
+horizontal_alignment = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer" unique_id=1343020712]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 110
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer" unique_id=177790575]
+layout_mode = 2
+theme_override_constants/separation = 130
+
+[node name="Force Capture Checkbox" type="CheckBox" parent="MarginContainer/VBoxContainer/HBoxContainer" unique_id=1987215674]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/Force Capture Checkbox" unique_id=987423000]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 31.0
+offset_top = -10.5
+offset_right = 126.0
+offset_bottom = 10.5
+grow_vertical = 2
+text = "Forced Capture"
+label_settings = SubResource("LabelSettings_wu84c")
+vertical_alignment = 1
+
 [connection signal="pressed" from="PanelContainer/CenterContainer/VBoxContainer/PanelContainer/Button" to="." method="_on_play_pressed"]
 [connection signal="toggled" from="PanelContainer/CenterContainer/VBoxContainer/HBoxContainer/CheckButton" to="." method="_on_check_button_toggled"]
+[connection signal="toggled" from="MarginContainer/VBoxContainer/HBoxContainer/Force Capture Checkbox" to="." method="_on_force_capture_checkbox_toggled"]

@@ -1,5 +1,8 @@
 extends Node
+
+# setting booleans
 var isPlayerOneRed := false
+var isPlayingWithForcedCapture := false
 
 var scene_dict = {
 	"game" : "res://scenes/game.tscn",

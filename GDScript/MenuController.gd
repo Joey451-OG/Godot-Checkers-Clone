@@ -7,3 +7,5 @@ func _on_play_pressed() -> void:
 func _on_check_button_toggled(toggled_on: bool) -> void:
 	Globals.isPlayerOneRed = not toggled_on
 	
+func _on_force_capture_checkbox_toggled(toggled_on: bool) -> void:
+	Globals.isPlayingWithForcedCapture = toggled_on
